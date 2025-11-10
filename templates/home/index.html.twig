@@ -1,0 +1,141 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Home - Library Management System{% endblock %}
+
+{% block body %}
+{# Hero Section #}
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="text-center py-5">
+            <h1 class="display-4 fw-bold mb-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <i class="bi bi-book-half"></i> Discover Your Next Read
+            </h1>
+            <p class="lead text-muted">Explore our extensive collection of books across various genres</p>
+        </div>
+    </div>
+</div>
+
+{# Search and Filter Form #}
+<div class="search-box mb-5">
+    <form method="get" action="{{ path('app_home') }}" class="row g-3">
+        <div class="col-md-5">
+            <label for="search" class="form-label fw-semibold">
+                <i class="bi bi-search"></i> Search Books
+            </label>
+            <input type="text" class="form-control form-control-lg" id="search" name="search" 
+                   value="{{ current_search }}" placeholder="Search by title, author, or description...">
+        </div>
+        <div class="col-md-3">
+            <label for="category" class="form-label fw-semibold">
+                <i class="bi bi-bookmark"></i> Category
+            </label>
+            <select class="form-select form-select-lg" id="category" name="category">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}" {% if current_category == category.id %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="author" class="form-label fw-semibold">
+                <i class="bi bi-person"></i> Author
+            </label>
+            <select class="form-select form-select-lg" id="author" name="author">
+                <option value="">All Authors</option>
+                {% for author in authors %}
+                    <option value="{{ author.id }}" {% if current_author == author.id %}selected{% endif %}>
+                        {{ author.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary btn-lg w-100">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+    </form>
+</div>
+
+{# Books Grid #}
+{% if books|length > 0 %}
+    <div class="mb-4">
+        <h3 class="fw-semibold mb-4">
+            <i class="bi bi-collection"></i> Available Books 
+            <span class="badge bg-primary">{{ books.getTotalItemCount }}</span>
+        </h3>
+    </div>
+    
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+        {% for book in books %}
+            <div class="col">
+                <div class="card book-card h-100">
+                    {% if book.isAvailable %}
+                        <span class="badge bg-success">Available</span>
+                    {% else %}
+                        <span class="badge bg-danger">Out of Stock</span>
+                    {% endif %}
+                    
+                    <div class="card-body d-flex flex-column">
+                        <div class="mb-3">
+                            <h5 class="card-title fw-bold mb-2">{{ book.title }}</h5>
+                            <p class="text-muted mb-2" style="font-size: 0.9rem;">
+                                <i class="bi bi-person-fill"></i>
+                                {% if book.authors|length > 0 %}
+                                    {% for author in book.authors %}{{ author.name }}{% if not loop.last %}, {% endif %}{% endfor %}
+                                {% else %}
+                                    Unknown Author
+                                {% endif %}
+                            </p>
+                            {% if book.category %}
+                                <span class="badge" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                    {{ book.category.name }}
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <p class="card-text text-muted flex-grow-1" style="font-size: 0.9rem;">
+                            {% if book.description %}
+                                {{ book.description|length > 120 ? book.description|slice(0, 120) ~ '...' : book.description }}
+                            {% else %}
+                                No description available.
+                            {% endif %}
+                        </p>
+                        
+                        <div class="d-flex align-items-center justify-content-between mt-3 pt-3 border-top">
+                            <div>
+                                <small class="text-muted d-block">ISBN: {{ book.isbn }}</small>
+                                <small class="{% if book.isAvailable %}text-success{% else %}text-danger{% endif %} fw-semibold">
+                                    <i class="bi bi-{% if book.isAvailable %}check-circle{% else %}x-circle{% endif %}"></i>
+                                    {{ book.availableCopies }} {% if book.availableCopies == 1 %}copy{% else %}copies{% endif %}
+                                </small>
+                            </div>
+                            <a href="{{ path('app_book_show', {id: book.id}) }}" class="btn btn-primary btn-sm">
+                                View <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {# Pagination #}
+    <div class="d-flex justify-content-center mt-5">
+        {{ knp_pagination_render(books) }}
+    </div>
+{% else %}
+    <div class="text-center py-5">
+        <div class="mb-4">
+            <i class="bi bi-search" style="font-size: 4rem; color: #cbd5e0;"></i>
+        </div>
+        <h4 class="fw-semibold mb-2">No Books Found</h4>
+        <p class="text-muted">Try adjusting your search criteria or browse all books</p>
+        <a href="{{ path('app_home') }}" class="btn btn-primary mt-3">
+            <i class="bi bi-arrow-left"></i> View All Books
+        </a>
+    </div>
+{% endif %}
+{% endblock %}

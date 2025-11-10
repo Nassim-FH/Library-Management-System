@@ -1,0 +1,7 @@
+{
+    "content-hash": "c3e9a9d8c3f1b8d8e3f9a9d8c3f1b8d8",
+    "symfony": {
+        "allow-contrib": false,
+        "require": "6.4.*"
+    }
+}

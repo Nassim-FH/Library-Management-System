@@ -1,0 +1,116 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Borrowing History{% endblock %}
+
+{% block body %}
+<h1 class="mb-4">
+    <i class="bi bi-clock-history"></i> My Borrowing History
+</h1>
+
+<ul class="nav nav-tabs mb-4" id="borrowingTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="active-tab" data-bs-toggle="tab" data-bs-target="#active" type="button">
+            Active Borrowings <span class="badge bg-primary">{{ active_borrowings|length }}</span>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button">
+            Complete History
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="borrowingTabsContent">
+    {# Active Borrowings Tab #}
+    <div class="tab-pane fade show active" id="active" role="tabpanel">
+        {% if active_borrowings|length > 0 %}
+            <div class="row">
+                {% for borrowing in active_borrowings %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card {% if borrowing.isOverdue %}border-danger{% endif %}">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ borrowing.book.title }}</h5>
+                                <p class="card-text">
+                                    <strong>Borrowed:</strong> {{ borrowing.borrowDate|date('F j, Y') }}<br>
+                                    <strong>Due Date:</strong> {{ borrowing.dueDate|date('F j, Y') }}<br>
+                                    <strong>Status:</strong> 
+                                    {% if borrowing.isOverdue %}
+                                        <span class="badge bg-danger">Overdue</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% endif %}
+                                </p>
+                                <form method="post" action="{{ path('app_return_book', {id: borrowing.id}) }}" class="d-inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('return' ~ borrowing.id) }}">
+                                    <button type="submit" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-check-circle"></i> Return Book
+                                    </button>
+                                </form>
+                                <a href="{{ path('app_book_show', {id: borrowing.book.id}) }}" class="btn btn-sm btn-outline-secondary">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> You don't have any active borrowings.
+            </div>
+        {% endif %}
+    </div>
+
+    {# Complete History Tab #}
+    <div class="tab-pane fade" id="history" role="tabpanel">
+        {% if borrowings|length > 0 %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Borrow Date</th>
+                            <th>Due Date</th>
+                            <th>Return Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for borrowing in borrowings %}
+                            <tr>
+                                <td>
+                                    <a href="{{ path('app_book_show', {id: borrowing.book.id}) }}">
+                                        {{ borrowing.book.title }}
+                                    </a>
+                                </td>
+                                <td>{{ borrowing.borrowDate|date('M j, Y') }}</td>
+                                <td>{{ borrowing.dueDate|date('M j, Y') }}</td>
+                                <td>
+                                    {% if borrowing.returnDate %}
+                                        {{ borrowing.returnDate|date('M j, Y') }}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if borrowing.status == 'returned' %}
+                                        <span class="badge bg-secondary">Returned</span>
+                                    {% elseif borrowing.isOverdue %}
+                                        <span class="badge bg-danger">Overdue</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> You haven't borrowed any books yet.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

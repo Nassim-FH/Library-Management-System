@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Book - Admin{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-md-8">
+        <h1 class="mb-4">
+            <i class="bi bi-pen"></i> Edit Book: {{ book.title }}
+        </h1>
+
+        <div class="card">
+            <div class="card-body">
+                {{ form_start(form) }}
+                    <div class="mb-3">
+                        {{ form_label(form.title, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.title) }}
+                        {{ form_errors(form.title) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.description) }}
+                        {{ form_errors(form.description) }}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.isbn, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.isbn) }}
+                            {{ form_errors(form.isbn) }}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.publicationDate, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.publicationDate) }}
+                            {{ form_errors(form.publicationDate) }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.category, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.category) }}
+                            {{ form_errors(form.category) }}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.availableCopies, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.availableCopies) }}
+                            {{ form_errors(form.availableCopies) }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.authors, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.authors, {'attr': {'size': '5'}}) }}
+                        {{ form_errors(form.authors) }}
+                        <small class="form-text text-muted">Hold Ctrl (Cmd on Mac) to select multiple authors</small>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ path('app_admin_book_index') }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Update Book
+                        </button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
